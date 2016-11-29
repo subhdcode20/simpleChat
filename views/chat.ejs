@@ -3,18 +3,89 @@
   <head>
     <meta charset="utf-8">
     <title>chat</title>
+
+    <style >
+      .chat-messages {
+        width: 500px;
+        height: 500px;
+        padding: 5px;
+        border: 1px solid;
+        overflow-y: scroll;
+      }
+
+      .chat textarea {
+        width: 500px;
+      }
+
+    </style>
   </head>
   <body>
-      <h3>You are connected to <%= user %></h3>
+
       <br>
       <div class="chat">
-        <div class="chat-messages" >
+        <div id="chat-messages" >
+          <ul id="msglist">
+
+          </ul>
 
         </div>
-        <textarea name="type-messages" placeholder="type your message here"></textarea>
-        <input type="submit" name="submit" value="SEND"></input>
+
+        <form id="chat-form" >
+          <textarea name="type-messages" placeholder="type your message here" id="message" focus></textarea>
+          <input type="submit" name="submit" value="SEND"></input>
+        </form>
       </div>
 
+      <script   src="http://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="                 crossorigin="anonymous"></script>
+      <script src="/socket.io/socket.io.js"></script>
+
+      <script type="text/javascript">
+        $('document').ready(function() {
+          socket = io();
+          var textarea = $('#message');
+          var chatForm = $('#chat-form');
+          var messages = $('#chat-messages');
+          var msglist = $('#msglist');
+
+          socket.on('connect', function() {
+            console.log("socket connected");
+          });
+
+
+          var room = <%= room %> ;
+          console.log(socket + " connected to " + room);
+          socket.join(room);
+          socket.room = room;
+
+
+          textarea.keypress(function(e) {
+            if(e.which == 13) {
+              e.preventDefault();
+              chatForm.trigger('submit');
+            }
+          });
+
+          chatForm.on('submit', function(e) {
+            e.preventDefault();
+            console.log("form submitted");
+            var msg = textarea.val().trim();
+            textarea.val('');
+            if(msg.length) {
+              socket.emit('new-message', msg);
+            }
+          });
+
+          socket.on('showmsg', function(data) {
+            msglist.append('<li>data</li><br>');
+          });
+
+
+
+
+
+
+        });
+      </script>
 
   </body>
 </html>

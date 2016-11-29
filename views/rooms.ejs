@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    welcome <%= user %><br><br>
+    <h3>Available Chat rooms:</h3><br>
+    <div class="chat-rooms">
+
+    </div>
+    <br>
+    Or create a room:<br>
+    <form class="chat-users"action="/create" method="post">
+      <input type="text" name="newroom" placeholder="enter a unique name for the room.">
+      
+      <input type="submit" name="create-new" value="CREATE">
+    </form>
+  </body>
+
+  <script type="text/javascript">
+    $(function() {
+
+
+
+    });
+
+  </script>
+
+</html>
