@@ -41,7 +41,7 @@ var io = require('socket.io').listen(app.listen(port));
   app.use(bodyParser.urlencoded({ extended: false }));
 
 
-//require('./config')(app, io);
-require('./routes')(app, io);
+
+require('./index')(app, io);
 
 console.log('Your application is running on http://localhost:' + port);

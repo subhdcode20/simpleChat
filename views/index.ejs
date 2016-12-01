@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>chat</title>
+    <style >
+      #login {
+        height: 250px;
+        text-align: center;
+        margin: 10px;
+      }
+
+      #rooomswrapper {
+        display: none;
+        margin: 10px;
+      }
+
+      #chatwrapper {
+        display: none;
+      }
+
+      #chat-messages {
+        width: 500px;
+        height: 500px;
+        padding: 5px;
+        border: 1px solid;
+        overflow-y: scroll;
+      }
+
+      .chat textarea {
+        width: 500px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <section id="login">
+      <h3>enter your username</h3><br>
+      <form id="loginform" action="/rooms" method="post">
+        <input type="text" id="username" name="username" placeholder="Enter your username" focus>
+
+        <input type="submit" name="submit" value="SEND">
+      </form>
+    </section>
+
+
+    <section id="rooomswrapper">
+      <h3>Available Chat rooms:</h3><br>
+      <div class="chat-rooms">
+
+      </div>
+      <br>
+      Or create a room:<br>
+      <form class="chat-users"action="/create" method="post">
+        <input type="text" name="newroom" placeholder="enter a unique name for the room." focus>
+
+        <input type="submit" name="create-new" value="CREATE">
+      </form>
+    </section>
+
+    <section id="chatwrapper">
+      <div class="chat">
+        <div id="chat-messages" >
+          <ul id="msglist">
+
+          </ul>
+
+        </div>
+
+      <footer>
+        <form id="chat-form" >
+          <textarea name="type-messages" placeholder="type your message here" id="message" focus></textarea>
+          <input type="submit" name="submit" value="SEND"></input>
+        </form>
+      </footer>
+
+      </div>
+    </section>
+
+    <script   src="http://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="                 crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script type="text/javascript">
+      $(function() {
+        socket = io();
+        var login = $('#login');
+        var rooomswrapper = $('#rooomswrapper');
+        var chatwrapper = $('#chatwrapper');
+        //var rooomswrapper = $('#rooomswrapper');
+
+
+        var textarea = $('#message');
+        var chatForm = $('#chat-form');
+        var messages = $('#chat-messages');
+        var msglist = $('#msglist');
+
+        $('#loginform').submit(function(e) {
+          e.preventDefault();
+          var username = $('#username').val();
+          socket.emit('login', username, function(data) {
+            if(data) {
+              alert('newuser: ');
+              login.hide();
+              rooomswrapper.show();
+            }
+          });
+        });
+
+/*
+        textarea.keypress(function(e) {
+          if(e.which == 13) {
+            e.preventDefault();
+            chatForm.trigger('submit');
+          }
+        });
+
+
+
+        socket.on('showmsg', function(data) {
+          //msglist.append('<li>data</li><br>');
+          msglist.append($('<li>').text(msg));
+        });
+*/
+
+
+
+
+
+
+      });
+    </script>
+
+  </body>
+</html>

@@ -7,15 +7,21 @@
   <body>
 
     welcome to SIMPLYCHAT by subhdcode! <br><br>
-    <form class="" action="/rooms" method="post">
-      <input type="text" name="username" placeholder="Enter your username">
+    <form id="loginform" action="/rooms" method="post">
+      <input type="text" id="username" name="username" placeholder="Enter your username" focus>
 
       <input type="submit" name="submit" value="SEND">
     </form>
 
     <script type="text/javascript">
       $(function() {
-        
+        socket.io();
+        $('#loginform').submit(function(e) {
+          alert('newuser: ');
+          e.preventDefault();
+          var username = $('#username').val();
+          socket.emit('login', username);
+        })
 
 
 

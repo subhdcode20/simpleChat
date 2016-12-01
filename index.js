@@ -1,12 +1,12 @@
 module.exports = function(app,io){
 
   app.get('/', function(req, res) {
-    res.render('home');
+    res.render('index');
   });
 
   var users = [];
   var rooms = [];
-
+/*
   app.get('/rooms', function(req, res) {
     //console.log(io.sockets.adapter.rooms);
     res.render('rooms', {user: "req.session.username", rooms: io.sockets.adapter.rooms});
@@ -31,11 +31,18 @@ module.exports = function(app,io){
     console.log('room= ' + room);
     res.render('chat', {room: room});
   });
-
+*/
   io.on('connection', function(socket) {
 
-    socket.on('login', function(data) {
+
+    socket.on('login', function(data, callback) {
       socket.username = data;
+      if(users.indexOf(data) != -1) {
+        user.push(data);
+        callback(true);
+      } else {
+        callback(false);
+      }
 
     });
 
