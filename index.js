@@ -35,21 +35,30 @@ module.exports = function(app,io){
   io.on('connection', function(socket) {
 
 
-    socket.on('login', function(data, callback) {
+    socket.on('login', function(data) {
+      console.log('here rooms');
       socket.username = data;
       if(users.indexOf(data) != -1) {
-        user.push(data);
-        callback(true);
+        socket.emit('showrooms', 'x');
       } else {
-        callback(false);
+        users.push(data);
+        socket.emit('showrooms', 'rooomswrapper');
       }
 
     });
 
-    socket.on('new-message', function(data) {
-      var rom = data.room;
-      console.log("submitted");
-      io.to('rom').emit('showmsg', "yayaayayaya");
+    socket.on('newroom', function(data) {
+      console.log('here chat');
+      socket.room = data;
+      if(rooms.indexOf(data) != -1) {
+        console.log('rooms already exists.');
+        socket.emit('showchat', 'x');
+      } else {
+        console.log('rooms created.');
+        rooms.push(data);
+        console.log(rooms);
+        socket.emit('showchat', 'chatwrapper');
+      }
     });
 
   });

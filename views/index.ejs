@@ -37,7 +37,7 @@
 
     <section id="login">
       <h3>enter your username</h3><br>
-      <form id="loginform" action="/rooms" method="post">
+      <form id="loginform">
         <input type="text" id="username" name="username" placeholder="Enter your username" focus>
 
         <input type="submit" name="submit" value="SEND">
@@ -51,11 +51,11 @@
 
       </div>
       <br>
-      Or create a room:<br>
-      <form class="chat-users"action="/create" method="post">
-        <input type="text" name="newroom" placeholder="enter a unique name for the room." focus>
+      <h3>Or create a room: </h3><br>
+      <form id="create_room">
+        <input type="text" name="newroom" id="abc" placeholder="enter a unique name for the room." focus>
 
-        <input type="submit" name="create-new" value="CREATE">
+        <input type="submit" name="submit" value="CREATE">
       </form>
     </section>
 
@@ -89,7 +89,8 @@
         var chatwrapper = $('#chatwrapper');
         //var rooomswrapper = $('#rooomswrapper');
 
-
+        var createroom = $('#create_room');
+        var newroom = $('#abc');
         var textarea = $('#message');
         var chatForm = $('#chat-form');
         var messages = $('#chat-messages');
@@ -98,14 +99,40 @@
         $('#loginform').submit(function(e) {
           e.preventDefault();
           var username = $('#username').val();
-          socket.emit('login', username, function(data) {
-            if(data) {
-              alert('newuser: ');
-              login.hide();
-              rooomswrapper.show();
-            }
-          });
+          socket.emit('login', username);
+          $('#username').val('');
         });
+
+        socket.on('showrooms', function(data) {
+          if(data == 'rooomswrapper') {
+            login.hide();
+            rooomswrapper.show();
+          } else if(data == 'x') {
+            alert('username already taken! enter unique username.');
+          }
+
+        });
+
+        $('#create_room').submit(function(e) {
+          e.preventDefault();
+          socket.emit('newroom', $('#abc').val());
+          newroom.val('');
+
+        });
+
+        socket.on('showchat', function(data) {
+          if(data == 'chatwrapper') {
+            rooomswrapper.hide();
+            chatwrapper.show();
+          } else {
+            
+            alert('room name already exists! enter a unique name.');
+          }
+        });
+
+
+
+
 
 /*
         textarea.keypress(function(e) {
