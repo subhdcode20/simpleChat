@@ -10,7 +10,7 @@ module.exports = function(app,io){
   app.get('/rooms', function(req, res) {
     //console.log(io.sockets.adapter.rooms);
     res.render('rooms', {user: "req.session.username", rooms: io.sockets.adapter.rooms});
-  })
+  });
 
   app.post('/rooms', function(req, res) {
     var username = req.body.username;

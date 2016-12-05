@@ -15,15 +15,26 @@
         margin: 10px;
       }
 
+      #chat-rooms {
+        height: 100px;
+      }
+
       #chatwrapper {
         display: none;
       }
 
       #chat-messages {
+        float: left;
         width: 500px;
         height: 500px;
         padding: 5px;
         border: 1px solid;
+        overflow-y: scroll;
+      }
+
+      #userswrapper {
+        width: 100px;
+        height: 100px;
         overflow-y: scroll;
       }
 
@@ -32,13 +43,16 @@
       }
 
     </style>
+
+
+
   </head>
   <body>
 
     <section id="login">
       <h3>enter your username</h3><br>
       <form id="loginform">
-        <input type="text" id="username" name="username" placeholder="Enter your username" focus>
+        <input type="text" id="username" name="username" placeholder="Enter your username" autofocus>
 
         <input type="submit" name="submit" value="SEND">
       </form>
@@ -47,13 +61,17 @@
 
     <section id="rooomswrapper">
       <h3>Available Chat rooms:</h3><br>
-      <div class="chat-rooms">
+        <div id="chat-rooms">
 
-      </div>
+        </div>
+        <form id="roomselect" >
+          <input type="text" id="joinroomselect" name="joinroomselect" autofocus>
+          <input type="submit" value="JOIN">
+        </form>
       <br>
       <h3>Or create a room: </h3><br>
       <form id="create_room">
-        <input type="text" name="newroom" id="abc" placeholder="enter a unique name for the room." focus>
+        <input type="text" name="newroom" id="abc" placeholder="enter a unique name for the room." autofocus>
 
         <input type="submit" name="submit" value="CREATE">
       </form>
@@ -61,24 +79,33 @@
 
     <section id="chatwrapper">
       <div class="chat">
+        Chat Room : <div id="currentroom"></div>
         <div id="chat-messages" >
-          <ul id="msglist">
 
-          </ul>
 
         </div>
 
-      <footer>
-        <form id="chat-form" >
-          <textarea name="type-messages" placeholder="type your message here" id="message" focus></textarea>
-          <input type="submit" name="submit" value="SEND"></input>
-        </form>
-      </footer>
+        <div class="userswrapper">
+          <h4>Users:</h4><br>
+          <div id="usersinroom">
+
+          </div>
+
+        </div>
+
+
+
+        <footer>
+          <form id="chat-form" >
+            <textarea name="type-messages" placeholder="type your message here" id="message" autofocus></textarea>
+            <input type="submit" name="submit" value="SEND"></input>
+          </form>
+        </footer>
 
       </div>
     </section>
 
-    <script   src="http://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="                 crossorigin="anonymous"></script>
+    <script   src="/js/jquery.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 
     <script type="text/javascript">
@@ -88,13 +115,16 @@
         var rooomswrapper = $('#rooomswrapper');
         var chatwrapper = $('#chatwrapper');
         //var rooomswrapper = $('#rooomswrapper');
-
+        var chatRooms = $('#chat-rooms');
         var createroom = $('#create_room');
         var newroom = $('#abc');
         var textarea = $('#message');
         var chatForm = $('#chat-form');
         var messages = $('#chat-messages');
         var msglist = $('#msglist');
+        var chatmessages = $('#chat-messages');
+        var usersinroom = $('#usersinroom');
+        var currentroom = $('#currentroom');
 
         $('#loginform').submit(function(e) {
           e.preventDefault();
@@ -120,16 +150,62 @@
 
         });
 
+        socket.on('updateRooms', function(data) {
+          var html = '';
+          for(var i=0; i<data.length; i++) {
+            html += '<a class="roomclick" href="#">' + data[i] + '</a><br>'; ///# ->  ' + data[i] +'
+          }
+          chatRooms.append(html);
+        });
+
         socket.on('showchat', function(data) {
-          if(data == 'chatwrapper') {
+          if(data.segment == 'chatwrapper') {
             rooomswrapper.hide();
             chatwrapper.show();
+            alert('current room: ' + data.room);
+            currentroom.append(data.room);
           } else {
-            
             alert('room name already exists! enter a unique name.');
           }
         });
 
+        socket.on('updateUsers', function(data) {
+          var html='';
+          for(var i in data) {
+            html += '<p>' +  data[i] + '<p><br>';
+          }
+          usersinroom.append(html)
+        });
+
+        $('#roomselect').submit(function(e) {
+          e.preventDefault();
+          var room = $('#joinroomselect').val();
+
+          socket.emit('joinroom', room);
+          $('#joinroomselect').val('');
+        });
+/*
+        $('.roomclick').click(function(e) {
+          //e.preventDefault();
+          alert('clicked on ' + $(this).text());
+          socket.emit('joinroom', $(this).text());
+        });
+*/
+
+        chatForm.submit(function(e) {
+          e.preventDefault();
+          var message = textarea.val();
+          socket.emit('newMessage', message);
+          alert('message sent!');
+
+
+        });
+
+        socket.on('showMessage', function(item) {
+          var html = '<b>'+ item.sender + '</b>: ' + item.msg + '<br>'
+          alert(html);
+          chatmessages.append(html);
+        });
 
 
 
