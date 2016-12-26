@@ -38,7 +38,7 @@ module.exports = function(app,io){
 */
   io.on('connection', function(socket) {
 
-    function findClientsSocketInRoom(roomid, namespace) {
+/*   function findClientsSocketInRoom(roomid, namespace) {
       var res = [];
       var ns = io.of(namespace || "/");
       if(ns) {
@@ -54,7 +54,7 @@ module.exports = function(app,io){
         }
       }
       return res;
-    }
+    }  */
 
     function findRooms() {
       var availableRooms = [];
@@ -115,6 +115,8 @@ module.exports = function(app,io){
         socket.emit('showchat', {segment: 'chatwrapper', room: socket.room});
       }
 
+      io.emit('updateRooms', findRooms());
+
     });
 
     socket.on('joinroom', function(data) {
@@ -140,6 +142,7 @@ module.exports = function(app,io){
       //save message
       io.to(socket.room).emit('showMessage', {sender: socket.username, msg: data});
       console.log('message recieved : ' + socket.username + " -> " + data + ' in room ' + socket.room);
+      console.log(io.sockets.adapter.rooms);
     });
 
 
